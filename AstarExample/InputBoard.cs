@@ -10,32 +10,39 @@ namespace AstarExample
 {
     public class InputBoard : GameBoard
     {
-        private IInputBoardObserver observer;
+        private List<IInputBoardObserver> observers;
 
         public InputBoard(int Height, int Width, int X, int Y) : base(Height, Width, X, Y)
         {
-
+            observers = new List<IInputBoardObserver>();
         }
 
         private void onTextChanged(InputMan sender, EventArgs e)
         {
 
-            if (observer != null)
+            if (observers.Count != 0)
             {
-                observer.OnMenValueChanged(sender.Position, sender.Value);
+                foreach (IInputBoardObserver observer in observers)
+                {
+                    observer.OnMenValueChanged(sender.Position, sender.DisplayTextBox.Text);
+                }
             }
         }
 
         
 
-        public void SetObserver(IInputBoardObserver observer)
+        public void AddObserver(IInputBoardObserver observer)
         {
-            this.observer = observer;
+            this.observers.Add(observer);
 
             foreach (InputMan man in Men)
             {
                 man.DisplayTextBox.TextChanged += (sender, e) => onTextChanged(man, e);
+                onTextChanged(man, EventArgs.Empty);
+
             }
+
+
         }
     }
 }

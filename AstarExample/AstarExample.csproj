@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AStar.cs" />
+    <Compile Include="BoardEqualityComparer.cs" />
     <Compile Include="BoardState.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

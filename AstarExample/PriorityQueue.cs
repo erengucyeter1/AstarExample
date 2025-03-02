@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 
 public class PriorityQueue<T> where T : IComparable<T>
 {
@@ -16,6 +16,7 @@ public class PriorityQueue<T> where T : IComparable<T>
         HeapifyUp(index);
     }
 
+    
     public T Dequeue()
     {
         if (heap.Count == 0) throw new InvalidOperationException("Queue is empty");
@@ -35,7 +36,37 @@ public class PriorityQueue<T> where T : IComparable<T>
         return root;
     }
 
+    
+
+
     public bool Contains(T item) => positions.ContainsKey(item);
+
+    public T Get(T item)
+    {
+        if (positions.TryGetValue(item, out int index))
+        {
+            return heap[index];
+        }
+        throw new InvalidOperationException("Item not found in the queue");
+    }
+
+    public void Remove(T item)
+    {
+        if (positions.TryGetValue(item, out int index))
+        {
+            T last = heap[heap.Count - 1];
+            heap[index] = last;
+            positions[last] = index;
+            heap.RemoveAt(heap.Count - 1);
+            positions.Remove(item);
+
+            if (index < heap.Count)
+            {
+                HeapifyUp(index);
+                HeapifyDown(index);
+            }
+        }
+    }
 
     private void HeapifyUp(int index)
     {
@@ -70,38 +101,6 @@ public class PriorityQueue<T> where T : IComparable<T>
             index = smallest;
         }
     }
-
-    public void Remove(T item)
-    {
-        if (!positions.ContainsKey(item)) throw new InvalidOperationException("Item not found");
-
-        int index = positions[item];
-        positions.Remove(item);
-
-        if (index == heap.Count - 1)
-        {
-            heap.RemoveAt(index);
-            return;
-        }
-
-        T last = heap[heap.Count - 1];
-        heap[index] = last;
-        positions[last] = index;
-        heap.RemoveAt(heap.Count - 1);
-
-        if (index == 0 || heap[index].CompareTo(heap[(index - 1) / 2]) >= 0)
-            HeapifyDown(index);
-        else
-            HeapifyUp(index);
-    }
-
-    public T Get(T item)
-    {
-        if (!positions.ContainsKey(item)) throw new InvalidOperationException("Item not found");
-        int index = positions[item];
-        return heap[index];
-    }
-
 
     private void Swap(int i, int j)
     {

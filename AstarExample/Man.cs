@@ -13,6 +13,10 @@ namespace AstarExample
         public Position Position { get; set; }
 
         public String _value = String.Empty;
+        public Label DisplayLabel { get; private set; }
+
+        public Size LabelSize { get; set; }
+
         public virtual String Value
         {
             get
@@ -22,35 +26,73 @@ namespace AstarExample
             set
             {
                 this._value = value;
-                DisplayLabel.Text = value;
+                if(DisplayLabel != null)
+                {
+                    DisplayLabel.Text = value;
+                }
             }
         }
 
         public int CalculateMannhattanDistance(Man other)
         {
-            return Math.Abs(this.Position.X - other.Position.X) + Math.Abs(this.Position.Y - other.Position.Y);
+            int result =  Math.Abs(this.Position.X - other.Position.X) + Math.Abs(this.Position.Y - other.Position.Y);
+            return result;
         }
 
-        public Label DisplayLabel { get; private set; }
 
-        public Man(Position position,Size size)
+        public Man()
         {
-            Label label = new Label();
+        }
+
+        public Label  InitLabel()
+        {
+            this.DisplayLabel = new Label();
+            DisplayLabel.Size = LabelSize;
+            DisplayLabel.Text = Value;
+            DisplayLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            DisplayLabel.ForeColor = Color.Black;
+            DisplayLabel.Font = new Font("Helvetica", 64, FontStyle.Bold);
+            DisplayLabel.BackColor = SystemColors.ControlDarkDark;
+            
+            
+            return DisplayLabel;
+        }
+
+        public Label InitLabel(Label srcLabel)
+        {
+            this.DisplayLabel = srcLabel;
+
+
+            return DisplayLabel;
+        }
+
+
+        public Man Clone(bool includeLabels = false)
+        {
+            Man temp = new Man();
+            temp.Position = this.Position;
+            temp.Value = this.Value;
+            if(includeLabels && this.DisplayLabel != null)
+            {
+                temp.InitLabel(this.DisplayLabel);
+                
+            }
+            return temp;
+        }
+        public Man(Position position,Size size):this()
+        {
+            
             this.Position = position;
-            label.Size = size;
-            label.Text = Value;
-            label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            label.ForeColor = Color.Black;
-            label.Font = new Font("Helvetica", 64, FontStyle.Bold);
-            label.BackColor = SystemColors.ControlDarkDark;
-            this.DisplayLabel = label;
+            LabelSize = size;            
          
 
         }
 
-        public Man(Position position)
+        public Man(Position position): this()
         {
-                this.Position = position;
+            this.Position = position;
         }
+
+
     }
 }

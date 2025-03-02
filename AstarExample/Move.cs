@@ -15,5 +15,10 @@ namespace AstarExample
              this.Destination = Destination;
             this.Source = Source;
         }
+
+        public override string ToString()
+        {
+            return "Source: " + Source.X + "," + Source.Y + " Destination: " + Destination.X + "," + Destination.Y;
+        }
     }
 }

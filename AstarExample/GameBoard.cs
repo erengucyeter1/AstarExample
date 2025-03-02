@@ -27,9 +27,34 @@ namespace AstarExample
                 {
                     man.Value = value;
 
+                    if (value.Equals(""))
+                    {
+                        man.DisplayLabel.Visible = false;
+                    }
+                    else
+                    {
+                        man.DisplayLabel.Visible = true;
+                    }
                 }
             }
 
+        }
+
+        public void ExchangeManLocations(Position source, Position destination)
+        {
+            int sourceX = source.X;
+            int sourceY = source.Y;
+            int destinationX = destination.X;
+            int destinationY = destination.Y;
+
+            Man tempMan = Men[sourceX, sourceY].Clone(true);
+
+            Men[sourceX, sourceY] = Men[destinationX, destinationY].Clone(true);
+            Men[sourceX, sourceY].Position = new Position(sourceX, sourceY);
+
+
+            Men[destinationX, destinationY] = tempMan;
+            Men[destinationX, destinationY].Position = new Position(destinationX, destinationY);
         }
 
         public BoardState GetBoardState()
@@ -40,5 +65,20 @@ namespace AstarExample
 
 
         }
+        public Man GetMan(string value)
+        {
+            foreach (Man man in this.Men)
+            {
+                if (man.Value.Equals(value))
+                {
+                    return man;
+                }
+            }
+            return null;
+        }
+
+       
     }
+
+
 }

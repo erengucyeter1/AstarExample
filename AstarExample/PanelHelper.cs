@@ -12,7 +12,7 @@ namespace AstarExample
         {
         }
 
-        private Point FindLocation(int x, int y, int Gap_H, int Gap_V, int SquareLenght)
+        private static Point FindLocation(int x, int y, int Gap_H, int Gap_V, int SquareLenght)
         {
             int loc_x = ((Gap_H * (x + 1)) + (x * SquareLenght));
             int loc_y = ((Gap_V * (y + 1)) + (y * SquareLenght));
@@ -22,7 +22,7 @@ namespace AstarExample
  
 
 
-        public void CreateMen(GameBoard board, int manPerEdge = 3)
+        public static void CreateMen(GameBoard board, BoardState source = null, int fontSize = 64, int manPerEdge = 3, Position nextMoveSource = null)
         {
             board.Men = new Man[manPerEdge, manPerEdge];
             board.Height = board.Width;
@@ -36,18 +36,33 @@ namespace AstarExample
             {
                 for (int j = 0; j < manPerEdge; j++)
                 {
-                    Man man = new Man(new Position(i, j), new Size(SquareWidth, SquareLenght));
+                    Man man = new Man(new Position(j, i), new Size(SquareWidth, SquareLenght));
 
-                    man.DisplayLabel.Location = FindLocation(i, j, Gap_H, Gap_V, SquareLenght);
-                    board.Men[i,j] = man;
+                    man.InitLabel().Location = FindLocation(j, i, Gap_H, Gap_V, SquareLenght);
+                    man.DisplayLabel.Font = new Font("Arial", fontSize);
+
+                    man.Value = source != null ? source.Men[j, i].Value : "";
+                    if(man.Value == "") { man.DisplayLabel.Visible = false; }
+                    board.Men[j, i] = man;
+
+                    if (nextMoveSource != null && man.Position.Equals(nextMoveSource))
+                    {
+                        man.DisplayLabel.BackColor = Color.PowderBlue;
+                    }
+
                     board.Controls.Add(man.DisplayLabel);
+                    man.DisplayLabel.BringToFront();
 
                 }
             }
 
+            board.Refresh();
+
         }
 
-        private void CheckInput(InputMan sender, EventArgs e)
+    
+
+        private static void CheckInput(InputMan sender, EventArgs e)
         {
             string temp = sender.DisplayTextBox.Text;
             if (temp.Length > 1)
@@ -60,7 +75,7 @@ namespace AstarExample
         }
 
 
-        public void CreateInputMen(InputBoard board, int manPerEdge = 3)
+        public static void CreateInputMen(InputBoard board, string[] seed = null,int manPerEdge = 3)
         {
             board.Men = new Man[manPerEdge, manPerEdge];
             board.Height = board.Width;
@@ -69,19 +84,23 @@ namespace AstarExample
             int SquareWidth = ((board.Size.Width - ((manPerEdge + 1) * Gap_H)) / manPerEdge);
             int SquareLenght = ((board.Size.Height - ((manPerEdge + 1) * Gap_V)) / manPerEdge);
 
+            int seedIndex = 0;
             for (int i = 0; i < manPerEdge; i++)
             {
                 for (int j = 0; j < manPerEdge; j++)
                 {
-                    InputMan man = new InputMan(new Position(i, j), new Size(SquareWidth, SquareLenght));
+                    InputMan man = new InputMan(new Position(j, i), new Size(SquareWidth, SquareLenght));
 
                     man.DisplayTextBox.TextChanged += (sender, e) => CheckInput(man, e);
-                    man.DisplayTextBox.Location = FindLocation(i, j, Gap_H, Gap_V, SquareLenght);
-                    board.Men[i, j] = man;
+                    man.DisplayTextBox.Location = FindLocation(j,i, Gap_H, Gap_V, SquareLenght);
+                    man.Value = seed != null ? seed[seedIndex++] : "";
+                    board.Men[j, i] = man;
                     board.Controls.Add(man.DisplayTextBox);
 
                 }
             }
         }
+
+        
     }
 }
